@@ -23,6 +23,7 @@ struct box_context {
     uint32_t secret_number;
     int trusted_id;
     int previous_box_caller;
+    int caller_id;
 };
 
 static const UvisorBoxAclItem acl[] = {
@@ -42,19 +43,18 @@ UVISOR_BOX_CONFIG(box_number_store, acl, UVISOR_BOX_STACK_SIZE, box_context);
 UVISOR_BOX_RPC_GATEWAY_SYNC (box_number_store, secure_number_get_number, get_number, uint32_t, void);
 UVISOR_BOX_RPC_GATEWAY_ASYNC(box_number_store, secure_number_set_number, set_number, int, uint32_t);
 
-static int caller_id;
-
 static int get_caller_id()
 {
-    if (caller_id != uvisor_ctx->previous_box_caller) {
+    if (uvisor_ctx->caller_id != uvisor_ctx->previous_box_caller) {
 
         led_blue = LED_ON;
         Thread::wait(100);
         led_blue = LED_OFF;
 
-        uvisor_ctx->previous_box_caller = caller_id;
+        uvisor_ctx->previous_box_caller = uvisor_ctx->caller_id;
     }
-    return caller_id;
+
+    return uvisor_ctx->caller_id;
 }
 
 static uint32_t get_number(void)
@@ -70,6 +70,9 @@ static int set_number(uint32_t number)
 {
     const int id = get_caller_id();
 
+    /* Cache the name verification result. This allows future checks to replace
+     * a relatively more expensive string compare with a cheaper integer
+     * comparison. */
     if (uvisor_ctx->trusted_id == -1) {
         char name[UVISOR_MAX_BOX_NAMESPACE_LENGTH];
         memset(name, 0, sizeof(name));
@@ -112,7 +115,7 @@ static void number_store_main(const void *)
         int status;
 
         /* NOTE: This serializes all access to the number store! */
-        status = rpc_fncall_waitfor(my_fn_array, 2, &caller_id, UVISOR_WAIT_FOREVER);
+        status = rpc_fncall_waitfor(my_fn_array, 2, &uvisor_ctx->caller_id, UVISOR_WAIT_FOREVER);
 
         if (status) {
             printf("Failure is not an option.\r\n");
