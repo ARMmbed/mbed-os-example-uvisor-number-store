@@ -70,6 +70,9 @@ static int set_number(uint32_t number)
 {
     const int id = get_caller_id();
 
+    /* Cache the name verification result. This allows future checks to replace
+     * a relatively more expensive string compare with a cheaper integer
+     * comparison. */
     if (uvisor_ctx->trusted_id == -1) {
         char name[UVISOR_MAX_BOX_NAMESPACE_LENGTH];
         memset(name, 0, sizeof(name));
