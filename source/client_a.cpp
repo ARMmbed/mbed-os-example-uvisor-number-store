@@ -22,6 +22,7 @@
 
 struct box_context {
     uint32_t number;
+    RawSerial * pc;
 };
 
 static const UvisorBoxAclItem acl[] = {
@@ -55,7 +56,7 @@ static void box_async_runner(const void *)
         while (1) {
             uint32_t ret;
             int status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            printf("%c: %s '0x%08x'\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
+            uvisor_ctx->pc->printf("%c: %s '0x%08x'\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
             /* FIXME: Add better error handling. */
             if (!status) {
                 break;
@@ -71,7 +72,7 @@ static void box_sync_runner(const void *)
     while (1) {
         /* Synchronous access to the number. */
         const uint32_t number = secure_number_get_number();
-        printf("%c: Read '0x%08x'\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
+        uvisor_ctx->pc->printf("%c: Read '0x%08x'\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
 
         Thread::wait(7000);
     }
@@ -79,6 +80,13 @@ static void box_sync_runner(const void *)
 
 static void client_a_main(const void *)
 {
+    /* Allocate serial port to ensure that code in this secure box won't touch
+     * the handle in the default security context when printing. */
+    uvisor_ctx->pc = new RawSerial(USBTX, USBRX);
+    if (!uvisor_ctx->pc) {
+        return;
+    }
+
     srand(uvisor_box_id_self());
     new Thread(box_sync_runner, NULL);
     new Thread(box_async_runner, NULL);
