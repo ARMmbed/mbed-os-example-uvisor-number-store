@@ -65,7 +65,7 @@ static void client_b_main(const void *)
         while (1) {
             uint32_t ret;
             int status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            uvisor_ctx->pc->printf("%c: %s '0x%08x'\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
+            uvisor_ctx->pc->printf("%c: %s '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
             if (!status) {
                 break;
             }
@@ -73,7 +73,7 @@ static void client_b_main(const void *)
 
         /* Synchronous access to the number. */
         number = secure_number_get_number();
-        uvisor_ctx->pc->printf("%c: Read '0x%08x'\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
+        uvisor_ctx->pc->printf("%c: Read '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
 
         Thread::wait(3000);
     }

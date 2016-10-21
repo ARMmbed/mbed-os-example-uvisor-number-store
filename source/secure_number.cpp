@@ -82,7 +82,7 @@ static int set_number(uint32_t number)
         static const char * trusted_namespace = "client_a";
         if (memcmp(name, trusted_namespace, sizeof(*trusted_namespace)) == 0) {
             uvisor_ctx->trusted_id = id;
-            uvisor_ctx->pc->printf("Trusted client a has box id %u\n", id);
+            uvisor_ctx->pc->printf("Trusted client a has box id %u\r\n", id);
         } else {
             return 1;
         }
