@@ -61,7 +61,7 @@ static void main_async_runner(const void *)
             /* TODO typesafe return codes */
             uint32_t ret;
             status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            printf("%c: %s '0x%08x'\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
+            printf("%c: %s '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
             if (!status) {
                 break;
             }
@@ -76,7 +76,7 @@ static void main_sync_runner(const void *)
     while (1) {
         /* Synchronous access to the number. */
         const uint32_t number = secure_number_get_number();
-        printf("%c: Read '0x%08x'\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
+        printf("%c: Read '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
 
         Thread::wait(11000);
     }

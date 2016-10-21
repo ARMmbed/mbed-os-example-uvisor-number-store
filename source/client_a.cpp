@@ -56,7 +56,7 @@ static void box_async_runner(const void *)
         while (1) {
             uint32_t ret;
             int status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            uvisor_ctx->pc->printf("%c: %s '0x%08x'\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
+            uvisor_ctx->pc->printf("%c: %s '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
             /* FIXME: Add better error handling. */
             if (!status) {
                 break;
@@ -72,7 +72,7 @@ static void box_sync_runner(const void *)
     while (1) {
         /* Synchronous access to the number. */
         const uint32_t number = secure_number_get_number();
-        uvisor_ctx->pc->printf("%c: Read '0x%08x'\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
+        uvisor_ctx->pc->printf("%c: Read '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
 
         Thread::wait(7000);
     }
