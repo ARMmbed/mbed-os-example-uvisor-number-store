@@ -31,11 +31,13 @@ static const UvisorBoxAclItem acl[] = {
 
 static void client_b_main(const void *);
 
-/* Box configuration */
+/* Box configuration
+ * This box has a smaller interrupt stack size as we do nothing special in it.
+ * The main thread uses printf so it needs at least 1kB of stack. */
 UVISOR_BOX_NAMESPACE("client_b");
-UVISOR_BOX_HEAPSIZE(8192);
-UVISOR_BOX_MAIN(client_b_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
-UVISOR_BOX_CONFIG(secure_number_client_b, acl, UVISOR_BOX_STACK_SIZE, box_context);
+UVISOR_BOX_HEAPSIZE(3072);
+UVISOR_BOX_MAIN(client_b_main, osPriorityNormal, 1024);
+UVISOR_BOX_CONFIG(secure_number_client_b, acl, 512, box_context);
 
 static uint32_t get_a_number()
 {

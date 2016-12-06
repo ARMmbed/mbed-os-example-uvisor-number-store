@@ -46,7 +46,7 @@ static uint32_t get_a_number()
     return (number -= 400UL);
 }
 
-static void main_async_runner(const void *)
+static void main_async_runner(void)
 {
     while (1) {
         uvisor_rpc_result_t result;
@@ -75,7 +75,7 @@ static void main_async_runner(const void *)
     }
 }
 
-static void main_sync_runner(const void *)
+static void main_sync_runner(void)
 {
     while (1) {
         /* Synchronous access to the number. */
@@ -94,8 +94,11 @@ int main(void)
     led_green = LED_OFF;
 
     /* Startup a few RPC runners. */
-    Thread sync(main_sync_runner, NULL);
-    Thread async(main_async_runner, NULL);
+    /* Note: The stack must be at least 1kB since threads will use printf. */
+    Thread sync(osPriorityNormal, 1024, NULL);
+    sync.start(main_sync_runner);
+    Thread async(osPriorityNormal, 1024, NULL);
+    async.start(main_async_runner);
 
     size_t count = 0;
 
