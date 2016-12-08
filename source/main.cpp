@@ -24,17 +24,9 @@
 
 /* Create ACLs for main box. */
 MAIN_ACL(g_main_acl);
-
-/* Register privleged system hooks. */
-UVISOR_EXTERN void SVC_Handler(void);
-UVISOR_EXTERN void PendSV_Handler(void);
-UVISOR_EXTERN void SysTick_Handler(void);
-extern "C" uint32_t rt_suspend(void);
-
-UVISOR_SET_PRIV_SYS_HOOKS(SVC_Handler, PendSV_Handler, SysTick_Handler, rt_suspend, __uvisor_semaphore_post);
-
 /* Enable uVisor. */
 UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
+UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
 
 DigitalOut led_red(LED1);
 DigitalOut led_green(LED2);
