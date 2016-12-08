@@ -71,6 +71,21 @@ extern DigitalOut led_blue;
         {(void *) 0x42000000, 0x01000000, UVISOR_TACLDEF_PERIPH}, /* FIXME */ \
     }
 
+#elif defined TARGET_MPS2
+
+#define LED_ON  true
+#define LED_OFF false
+
+#define MAIN_ACL(acl_list_name) \
+    static const UvisorBoxAclItem acl_list_name[] = { \
+        {CMSDK_GPIO0, sizeof(*CMSDK_GPIO0), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_GPIO1, sizeof(*CMSDK_GPIO1), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_UART0, sizeof(*CMSDK_UART0), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_UART1, sizeof(*CMSDK_UART1), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_UART2, sizeof(*CMSDK_UART2), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_DUALTIMER, sizeof(*CMSDK_DUALTIMER), UVISOR_TACLDEF_PERIPH}, \
+    }
+
 #endif /* Target-specific settings */
 
 #endif /* __UVISOR_HELLOWORLD_MAIN_HW_H__ */
