@@ -93,7 +93,6 @@ static void client_a_main(const void *)
 
     /* Create new threads. */
     /* Note: The stack must be at least 1kB since threads will use printf. */
-    srand(uvisor_box_id_self());
     Thread sync(osPriorityNormal, 1024, NULL);
     sync.start(box_sync_runner);
     Thread async(osPriorityNormal, 1024, NULL);
