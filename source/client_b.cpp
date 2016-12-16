@@ -65,7 +65,11 @@ static void client_b_main(const void *)
         while (1) {
             uint32_t ret;
             int status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            uvisor_ctx->pc->printf("%c: %s '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (ret == 0) ? "Wrote" : "Failed to write", (unsigned int) number);
+            uvisor_ctx->pc->printf("%c: %s '0x%08x'\r\n",
+                                   (char) uvisor_box_id_self() + '0',
+                                   (ret == 0) ? "Wrote" :
+                                                "Permission denied. This client cannot write the secure number",
+                                   (unsigned int) number);
             if (!status) {
                 break;
             }
