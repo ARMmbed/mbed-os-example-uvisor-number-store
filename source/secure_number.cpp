@@ -36,7 +36,7 @@ static int set_number(uint32_t number);
 
 /* Box configuration */
 UVISOR_BOX_NAMESPACE(NULL);
-UVISOR_BOX_HEAPSIZE(8192);
+UVISOR_BOX_HEAPSIZE(3072);
 UVISOR_BOX_MAIN(number_store_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
 UVISOR_BOX_CONFIG(box_number_store, acl, UVISOR_BOX_STACK_SIZE, box_context);
 

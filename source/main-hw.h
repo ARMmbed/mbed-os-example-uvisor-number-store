@@ -17,17 +17,14 @@
 #ifndef __UVISOR_HELLOWORLD_MAIN_HW_H__
 #define __UVISOR_HELLOWORLD_MAIN_HW_H__
 
-/* The vector containing the challenge is shared with the push-button ISR, so
- * that it can attempt to access it from an IRQ context. */
+extern DigitalOut led_red;
+extern DigitalOut led_green;
+extern DigitalOut led_blue;
+
+#if defined(TARGET_K64F)
 
 #define LED_ON  false
 #define LED_OFF true
-
-#define MAIN_LED LED_BLUE
-#define HALT_LED LED_RED
-
-#define MAIN_BTN SW2
-#define MAIN_BTN_PUPD PullUp
 
 #define MAIN_ACL(acl_list_name) \
     static const UvisorBoxAclItem acl_list_name[] = {     \
@@ -48,8 +45,47 @@
         {SPI0,   sizeof(*SPI0),   UVISOR_TACLDEF_PERIPH}, \
     }
 
-extern DigitalOut led_red;
-extern DigitalOut led_green;
-extern DigitalOut led_blue;
+#elif defined (TARGET_DISCO_F429ZI)
+
+#define LED_ON  true
+#define LED_OFF false
+
+#define MAIN_ACL(acl_list_name) \
+    static const UvisorBoxAclItem acl_list_name[] = {     \
+        {GPIOA,  sizeof(*GPIOA),    UVISOR_TACLDEF_PERIPH}, \
+        {GPIOB,  sizeof(*GPIOB),    UVISOR_TACLDEF_PERIPH}, \
+        {GPIOC,  sizeof(*GPIOC),    UVISOR_TACLDEF_PERIPH}, \
+        {GPIOD,  sizeof(*GPIOD),    UVISOR_TACLDEF_PERIPH}, \
+        {GPIOE,  sizeof(*GPIOE),    UVISOR_TACLDEF_PERIPH}, \
+        {RTC,    sizeof(*RTC),      UVISOR_TACLDEF_PERIPH}, \
+        {TIM5,   sizeof(*TIM5),     UVISOR_TACLDEF_PERIPH}, \
+        {USART1, sizeof(*USART1),   UVISOR_TACLDEF_PERIPH}, \
+        {I2C1,   sizeof(*I2C1),     UVISOR_TACLDEF_PERIPH}, \
+        {SPI1,   sizeof(*SPI1),     UVISOR_TACLDEF_PERIPH}, \
+        {RCC,    sizeof(*RCC),      UVISOR_TACLDEF_PERIPH}, \
+        {FLASH,  sizeof(*FLASH),    UVISOR_TACLDEF_PERIPH}, \
+        {PWR,    sizeof(*PWR),      UVISOR_TACLDEF_PERIPH}, \
+        {EXTI,   sizeof(*EXTI),     UVISOR_TACLDEF_PERIPH}, \
+        {GPIOG,  sizeof(*GPIOG),    UVISOR_TACLDEF_PERIPH}, \
+        {SYSCFG, sizeof(*SYSCFG),   UVISOR_TACLDEF_PERIPH}, \
+        {(void *) 0x42000000, 0x01000000, UVISOR_TACLDEF_PERIPH}, /* FIXME */ \
+    }
+
+#elif defined TARGET_MPS2
+
+#define LED_ON  true
+#define LED_OFF false
+
+#define MAIN_ACL(acl_list_name) \
+    static const UvisorBoxAclItem acl_list_name[] = { \
+        {CMSDK_GPIO0, sizeof(*CMSDK_GPIO0), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_GPIO1, sizeof(*CMSDK_GPIO1), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_UART0, sizeof(*CMSDK_UART0), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_UART1, sizeof(*CMSDK_UART1), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_UART2, sizeof(*CMSDK_UART2), UVISOR_TACLDEF_PERIPH}, \
+        {CMSDK_DUALTIMER, sizeof(*CMSDK_DUALTIMER), UVISOR_TACLDEF_PERIPH}, \
+    }
+
+#endif /* Target-specific settings */
 
 #endif /* __UVISOR_HELLOWORLD_MAIN_HW_H__ */

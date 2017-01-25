@@ -30,11 +30,13 @@ static const UvisorBoxAclItem acl[] = {
 
 static void client_a_main(const void *);
 
-/* Box configuration */
+/* Box configuration
+ * This box has a smaller interrupt and main thread stack sizes as we do nothing
+ * special in them. */
 UVISOR_BOX_NAMESPACE("client_a");
-UVISOR_BOX_HEAPSIZE(8192);
-UVISOR_BOX_MAIN(client_a_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
-UVISOR_BOX_CONFIG(secure_number_client_a, acl, UVISOR_BOX_STACK_SIZE, box_context);
+UVISOR_BOX_HEAPSIZE(3072);
+UVISOR_BOX_MAIN(client_a_main, osPriorityNormal, 512);
+UVISOR_BOX_CONFIG(secure_number_client_a, acl, 512, box_context);
 
 static uint32_t get_a_number()
 {
@@ -42,7 +44,7 @@ static uint32_t get_a_number()
     return (uvisor_ctx->number -= 500UL);
 }
 
-static void box_async_runner(const void *)
+static void box_async_runner(void)
 {
     while (1) {
         uvisor_rpc_result_t result;
@@ -71,7 +73,7 @@ static void box_async_runner(const void *)
     }
 }
 
-static void box_sync_runner(const void *)
+static void box_sync_runner(void)
 {
     while (1) {
         /* Synchronous access to the number. */
@@ -91,7 +93,10 @@ static void client_a_main(const void *)
         return;
     }
 
-    srand(uvisor_box_id_self());
-    new Thread(box_sync_runner, NULL);
-    new Thread(box_async_runner, NULL);
+    /* Create new threads. */
+    /* Note: The stack must be at least 1kB since threads will use printf. */
+    Thread sync(osPriorityNormal, 1024, NULL);
+    sync.start(box_sync_runner);
+    Thread async(osPriorityNormal, 1024, NULL);
+    async.start(box_async_runner);
 }

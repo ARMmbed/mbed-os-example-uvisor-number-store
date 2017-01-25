@@ -24,17 +24,9 @@
 
 /* Create ACLs for main box. */
 MAIN_ACL(g_main_acl);
-
-/* Register privleged system hooks. */
-UVISOR_EXTERN void SVC_Handler(void);
-UVISOR_EXTERN void PendSV_Handler(void);
-UVISOR_EXTERN void SysTick_Handler(void);
-extern "C" uint32_t rt_suspend(void);
-
-UVISOR_SET_PRIV_SYS_HOOKS(SVC_Handler, PendSV_Handler, SysTick_Handler, rt_suspend, __uvisor_semaphore_post);
-
 /* Enable uVisor. */
 UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
+UVISOR_SET_PAGE_HEAP(8*1024, 5);
 
 DigitalOut led_red(LED1);
 DigitalOut led_green(LED2);
@@ -46,7 +38,7 @@ static uint32_t get_a_number()
     return (number -= 400UL);
 }
 
-static void main_async_runner(const void *)
+static void main_async_runner(void)
 {
     while (1) {
         uvisor_rpc_result_t result;
@@ -75,7 +67,7 @@ static void main_async_runner(const void *)
     }
 }
 
-static void main_sync_runner(const void *)
+static void main_sync_runner(void)
 {
     while (1) {
         /* Synchronous access to the number. */
@@ -94,8 +86,11 @@ int main(void)
     led_green = LED_OFF;
 
     /* Startup a few RPC runners. */
-    Thread sync(main_sync_runner, NULL);
-    Thread async(main_async_runner, NULL);
+    /* Note: The stack must be at least 1kB since threads will use printf. */
+    Thread sync(osPriorityNormal, 1024, NULL);
+    sync.start(main_sync_runner);
+    Thread async(osPriorityNormal, 1024, NULL);
+    async.start(main_async_runner);
 
     size_t count = 0;
 
