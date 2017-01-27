@@ -17,17 +17,14 @@
 #ifndef __UVISOR_HELLOWORLD_MAIN_HW_H__
 #define __UVISOR_HELLOWORLD_MAIN_HW_H__
 
-/* The vector containing the challenge is shared with the push-button ISR, so
- * that it can attempt to access it from an IRQ context. */
+extern DigitalOut led_red;
+extern DigitalOut led_green;
+extern DigitalOut led_blue;
+
+#if defined(TARGET_K64F)
 
 #define LED_ON  false
 #define LED_OFF true
-
-#define MAIN_LED LED_BLUE
-#define HALT_LED LED_RED
-
-#define MAIN_BTN SW2
-#define MAIN_BTN_PUPD PullUp
 
 #define MAIN_ACL(acl_list_name) \
     static const UvisorBoxAclItem acl_list_name[] = {     \
@@ -48,8 +45,10 @@
         {SPI0,   sizeof(*SPI0),   UVISOR_TACLDEF_PERIPH}, \
     }
 
-extern DigitalOut led_red;
-extern DigitalOut led_green;
-extern DigitalOut led_blue;
+#else /* Target-specific settings */
+
+#error "Unsupported target. Checkout the README.md file for the list of supported targets for this app."
+
+#endif /* Target-specific settings */
 
 #endif /* __UVISOR_HELLOWORLD_MAIN_HW_H__ */
