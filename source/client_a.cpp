@@ -42,7 +42,7 @@ static uint32_t get_a_number()
     return (uvisor_ctx->number -= 500UL);
 }
 
-static void box_async_runner(const void *)
+static void box_async_runner(void)
 {
     while (1) {
         uvisor_rpc_result_t result;
@@ -71,7 +71,7 @@ static void box_async_runner(const void *)
     }
 }
 
-static void box_sync_runner(const void *)
+static void box_sync_runner(void)
 {
     while (1) {
         /* Synchronous access to the number. */
@@ -91,7 +91,17 @@ static void client_a_main(const void *)
         return;
     }
 
+    /* Create new threads. */
+    /* Note: The stack must be at least 1kB since threads will use printf. */
     srand(uvisor_box_id_self());
-    new Thread(box_sync_runner, NULL);
-    new Thread(box_async_runner, NULL);
+    Thread sync(osPriorityNormal, 1024, NULL);
+    sync.start(box_sync_runner);
+    Thread async(osPriorityNormal, 1024, NULL);
+    async.start(box_async_runner);
+
+    size_t count = 0;
+    while (1) {
+        /* Spin forever. */
+        ++count;
+    }
 }
