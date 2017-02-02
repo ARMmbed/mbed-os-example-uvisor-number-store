@@ -80,7 +80,8 @@ static int set_number(uint32_t number)
         uvisor_box_namespace(id, name, sizeof(name));
         /* We only trust client a. */
         static const char * trusted_namespace = "client_a";
-        if (memcmp(name, trusted_namespace, sizeof(*trusted_namespace)) == 0) {
+        size_t trusted_namespace_length = strlen(trusted_namespace);
+        if (memcmp(name, trusted_namespace, trusted_namespace_length + 1) == 0) {
             uvisor_ctx->trusted_id = id;
         } else {
             return 1;
