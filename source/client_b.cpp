@@ -22,7 +22,6 @@
 
 struct box_context {
     uint32_t number;
-    RawSerial * pc;
 };
 
 static const UvisorBoxAclItem acl[] = {
@@ -45,13 +44,6 @@ static uint32_t get_a_number()
 
 static void client_b_main(const void *)
 {
-    /* Allocate serial port to ensure that code in this secure box won't touch
-     * the handle in the default security context when printing. */
-    uvisor_ctx->pc = new RawSerial(USBTX, USBRX);
-    if (!uvisor_ctx->pc) {
-        return;
-    }
-
     /* The entire box code runs in its main thread. */
     while (1) {
         uvisor_rpc_result_t result;
@@ -65,8 +57,8 @@ static void client_b_main(const void *)
         while (1) {
             uint32_t ret;
             int status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            uvisor_ctx->pc->printf("client_b: Attempt to write  0x%08X (%s)\r\n",
-                                   (unsigned int) number, (ret == 0) ? "granted" : "denied");
+            shared_pc.printf("client_b: Attempt to write  0x%08X (%s)\r\n",
+                             (unsigned int) number, (ret == 0) ? "granted" : "denied");
             if (!status) {
                 break;
             }
@@ -74,7 +66,7 @@ static void client_b_main(const void *)
 
         /* Synchronous access to the number. */
         number = secure_number_get_number();
-        uvisor_ctx->pc->printf("client_b: Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
+        shared_pc.printf("client_b: Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
 
         Thread::wait(3000);
     }

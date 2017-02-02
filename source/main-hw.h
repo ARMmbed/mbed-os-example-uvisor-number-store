@@ -21,6 +21,8 @@ extern DigitalOut led_red;
 extern DigitalOut led_green;
 extern DigitalOut led_blue;
 
+extern Serial shared_pc;
+
 #if defined(TARGET_K64F)
 
 #define LED_ON  false

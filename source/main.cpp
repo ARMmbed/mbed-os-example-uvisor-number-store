@@ -32,6 +32,8 @@ DigitalOut led_red(LED1);
 DigitalOut led_green(LED2);
 DigitalOut led_blue(LED3);
 
+Serial shared_pc(USBTX, USBRX);
+
 static uint32_t get_a_number()
 {
     static uint32_t number = 425;
@@ -53,8 +55,8 @@ static void main_async_runner(void)
             /* TODO typesafe return codes */
             uint32_t ret;
             status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            printf("public  : Attempt to write  0x%08X (%s)\r\n",
-                   (unsigned int) number, (ret == 0) ? "granted" : "denied");
+            shared_pc.printf("public  : Attempt to write  0x%08X (%s)\r\n",
+                             (unsigned int) number, (ret == 0) ? "granted" : "denied");
             if (!status) {
                 break;
             }
@@ -69,7 +71,7 @@ static void main_sync_runner(void)
     while (1) {
         /* Synchronous access to the number. */
         const uint32_t number = secure_number_get_number();
-        printf("public  : Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
+        shared_pc.printf("public  : Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
 
         Thread::wait(11000);
     }
@@ -77,7 +79,7 @@ static void main_sync_runner(void)
 
 int main(void)
 {
-    printf("\r\n***** uVisor secure number store example *****\r\n");
+    shared_pc.printf("\r\n***** uVisor secure number store example *****\r\n");
     led_red = LED_OFF;
     led_blue = LED_OFF;
     led_green = LED_OFF;

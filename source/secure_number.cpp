@@ -24,7 +24,6 @@ struct box_context {
     int trusted_id;
     int previous_box_caller;
     int caller_id;
-    RawSerial * pc;
 };
 
 static const UvisorBoxAclItem acl[] = {
@@ -103,13 +102,6 @@ static int set_number(uint32_t number)
 
 static void number_store_main(const void *)
 {
-    /* Allocate serial port to ensure that code in this secure box won't touch
-     * the handle in the default security context when printing. */
-    uvisor_ctx->pc = new RawSerial(USBTX, USBRX);
-    if (!uvisor_ctx->pc) {
-        return;
-    }
-
     /* Today we only allow client a to write to the number. */
     uvisor_ctx->trusted_id = -1;
 
@@ -119,8 +111,8 @@ static void number_store_main(const void *)
         (TFN_Ptr) set_number
     };
 
-    uvisor_ctx->pc->printf("vault   : Only client_a can write into the vault\r\n");
-    uvisor_ctx->pc->printf("vault   : All clients can read the vault\r\n");
+    shared_pc.printf("vault   : Only client_a can write into the vault\r\n");
+    shared_pc.printf("vault   : All clients can read the vault\r\n");
     while (1) {
         int status;
 
@@ -128,7 +120,7 @@ static void number_store_main(const void *)
         status = rpc_fncall_waitfor(my_fn_array, 2, &uvisor_ctx->caller_id, UVISOR_WAIT_FOREVER);
 
         if (status) {
-            uvisor_ctx->pc->printf("Failure is not an option.\r\n");
+            shared_pc.printf("Failure is not an option.\r\n");
             uvisor_error(USER_NOT_ALLOWED);
         }
     }
