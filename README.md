@@ -12,11 +12,11 @@ This number can only be written by one box, but read by all boxes.
 
 This demo contains three secure boxes:
 
-1. The secure number vault. This box stores one number that can only be written to by client A, but read by everyone.
+1. The secure number vault. This box stores one number that can only be written to by Client A, but read by everyone.
 1. Client A, which attempts to write (and succeeds) and read the secure number.
 1. Client B, which attempts to write (but fails) and read the secure number.
 
-The insecure box 0 also attempts to write (but fails) and read the secure number.
+As usual, all the code/data that is not protected by a secure box ends up in the public box (also known as box 0), which is visible by all other boxes and, hence, insecure. The public box also attempts to write (but fails) and read the secure number.
 
 Supported devices:
 
@@ -24,7 +24,7 @@ Supported devices:
 |--------|-----------|-----------|
 | `K64F` | `GCC_ARM` | 9600      |
 
-Latest release: [mbed-os-5.3.0](https://github.com/ARMmbed/mbed-os-example-uvisor/releases/tag/mbed-os-5.3.0). Tested with [mbed-cli v1.0.0](https://github.com/ARMmbed/mbed-cli/releases/tag/1.0.0).
+Latest release: [mbed-os-5.3.x](https://github.com/ARMmbed/mbed-os-example-uvisor/releases/tag/latest). Tested with [mbed-cli v1.0.0](https://github.com/ARMmbed/mbed-cli/releases/tag/1.0.0).
 
 ## Quickstart
 
@@ -45,18 +45,16 @@ $ screen /dev/tty.usbmodem1422 9600
 You will see an output similar to the following one:
 
 ```
-**** uVisor secure number store example *****
-Trusted client a has box id 2
-2: Wrote '0xfffffed4'
-1: Read '0xfffffed4'
-1: Permission denied. This client cannot write the secure number '0xfffffe0c'
-0: Read '0xfffffed4'
-0: Permission denied. This client cannot write the secure number '0x00000019'
-2: Read '0xfffffed4'
-2: Wrote '0xfffffda8'
-2: Read '0xfffffda8'
-1: Permission denied. This client cannot write the secure number '0xfffffc18'
-2: Wrote '0xfffffc7c'
+***** uVisor secure number store example *****
+vault   : Only client_a can write into the vault
+vault   : All clients can read the vault
+client_b: Attempt to write  0xFFFFFED4 (denied)
+client_a: Attempt to read : 0x00000000 (granted)
+client_a: Attempt to write  0xFFFFFE0C (granted)
+public  : Attempt to read : 0xFFFFFE0C (granted)
+public  : Attempt to write  0x00000019 (denied)
+client_b: Attempt to read : 0xFFFFFE0C (granted)
+client_a: Attempt to read : 0xFFFFFE0C (granted)
 ...
 ```
 

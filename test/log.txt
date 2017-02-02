@@ -1,71 +1,13 @@
-
-**** uVisor secure number store example *****
-Trusted client a has box id 2
-2: Wrote '0xfffffed4'
-1: Read '0xfffffed4'
-1: Failed to write '0xfffffe0c'
-0: Read '0xfffffed4'
-0: Failed to write '0x00000019'
-2: Read '0xfffffed4'
-2: Wrote '0xfffffda8'
-2: Read '0xfffffda8'
-1: Failed to write '0xfffffc18'
-2: Wrote '0xfffffc7c'
-1: Read '0xfffffc7c'
-2: Read '0xfffffc7c'
-2: Wrote '0xfffffb50'
-1: Failed to write '0xfffffa24'
-2: Read '0xfffffb50'
-0: Read '0xfffffb50'
-0: Failed to write '0xfffffe89'
-2: Wrote '0xfffffa24'
-2: Read '0xfffffa24'
-1: Read '0xfffffa24'
-1: Failed to write '0xfffff830'
-2: Wrote '0xfffff8f8'
-2: Read '0xfffff8f8'
-2: Wrote '0xfffff7cc'
-2: Read '0xfffff7cc'
-1: Failed to write '0xfffff63c'
-1: Read '0xfffff7cc'
-0: Read '0xfffff7cc'
-2: Wrote '0xfffff6a0'
-2: Read '0xfffff6a0'
-1: Failed to write '0xfffff448'
-0: Failed to write '0xfffffcf9'
-2: Wrote '0xfffff574'
-2: Read '0xfffff574'
-1: Read '0xfffff574'
-2: Wrote '0xfffff448'
-2: Read '0xfffff448'
-1: Failed to write '0xfffff254'
-0: Read '0xfffff448'
-2: Wrote '0xfffff31c'
-2: Read '0xfffff31c'
-1: Read '0xfffff31c'
-1: Failed to write '0xfffff060'
-2: Wrote '0xfffff1f0'
-2: Read '0xfffff1f0'
-0: Failed to write '0xfffffb69'
-2: Wrote '0xfffff0c4'
-2: Read '0xfffff0c4'
-1: Failed to write '0xffffee6c'
-1: Read '0xfffff0c4'
-2: Wrote '0xffffef98'
-2: Read '0xffffef98'
-0: Read '0xffffef98'
-1: Failed to write '0xffffec78'
-2: Wrote '0xffffee6c'
-2: Read '0xffffee6c'
-1: Read '0xffffee6c'
-2: Wrote '0xffffed40'
-2: Read '0xffffed40'
-1: Failed to write '0xffffea84'
-0: Failed to write '0xfffff9d9'
-2: Wrote '0xffffec14'
-2: Read '0xffffec14'
-0: Read '0xffffec14'
-1: Failed to write '0xffffe890'
-1: Read '0xffffec14'
-2: Wrote '0xffffeae8'
-2: Read '0xffffeae8'
+
+***** uVisor secure number store example *****
+vault   : Only client_a can write into the vault
+vault   : All clients can read the vault
+client_b: Attempt to write  0xFFFFFED4 (denied)
+client_a: Attempt to read : 0x00000000 (granted)
+client_a: Attempt to write  0xFFFFFE0C (granted)
+public  : Attempt to read : 0xFFFFFE0C (granted)
+public  : Attempt to write  0x00000019 (denied)
+client_b: Attempt to read : 0xFFFFFE0C (granted)
+client_a: Attempt to read : 0xFFFFFE0C (granted)
+client_a: Attempt to write  0xFFFFFC18 (granted)
+public  : Attempt to read : 0xFFFFFC18 (granted)
