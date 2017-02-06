@@ -24,21 +24,15 @@
 
 /* Create ACLs for main box. */
 MAIN_ACL(g_main_acl);
-
-/* Register privleged system hooks. */
-UVISOR_EXTERN void SVC_Handler(void);
-UVISOR_EXTERN void PendSV_Handler(void);
-UVISOR_EXTERN void SysTick_Handler(void);
-extern "C" uint32_t rt_suspend(void);
-
-UVISOR_SET_PRIV_SYS_HOOKS(SVC_Handler, PendSV_Handler, SysTick_Handler, rt_suspend, __uvisor_semaphore_post);
-
 /* Enable uVisor. */
 UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
+UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
 
 DigitalOut led_red(LED1);
 DigitalOut led_green(LED2);
 DigitalOut led_blue(LED3);
+
+Serial shared_pc(USBTX, USBRX);
 
 static uint32_t get_a_number()
 {
@@ -46,7 +40,7 @@ static uint32_t get_a_number()
     return (number -= 400UL);
 }
 
-static void main_async_runner(const void *)
+static void main_async_runner(void)
 {
     while (1) {
         uvisor_rpc_result_t result;
@@ -61,11 +55,8 @@ static void main_async_runner(const void *)
             /* TODO typesafe return codes */
             uint32_t ret;
             status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            printf("%c: %s '0x%08x'\r\n",
-                   (char) uvisor_box_id_self() + '0',
-                   (ret == 0) ? "Wrote" :
-                                "Permission denied. This client cannot write the secure number",
-                   (unsigned int) number);
+            shared_pc.printf("public  : Attempt to write  0x%08X (%s)\r\n",
+                             (unsigned int) number, (ret == 0) ? "granted" : "denied");
             if (!status) {
                 break;
             }
@@ -75,12 +66,12 @@ static void main_async_runner(const void *)
     }
 }
 
-static void main_sync_runner(const void *)
+static void main_sync_runner(void)
 {
     while (1) {
         /* Synchronous access to the number. */
         const uint32_t number = secure_number_get_number();
-        printf("%c: Read '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
+        shared_pc.printf("public  : Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
 
         Thread::wait(11000);
     }
@@ -88,19 +79,20 @@ static void main_sync_runner(const void *)
 
 int main(void)
 {
-    printf("\r\n***** uVisor secure number store example *****\r\n");
+    shared_pc.printf("\r\n***** uVisor secure number store example *****\r\n");
     led_red = LED_OFF;
     led_blue = LED_OFF;
     led_green = LED_OFF;
 
     /* Startup a few RPC runners. */
-    Thread sync(main_sync_runner, NULL);
-    Thread async(main_async_runner, NULL);
+    /* Note: The stack must be at least 1kB since threads will use printf. */
+    Thread sync(osPriorityNormal, 1024, NULL);
+    sync.start(main_sync_runner);
+    Thread async(osPriorityNormal, 1024, NULL);
+    async.start(main_async_runner);
 
     size_t count = 0;
-
-    while (1)
-    {
+    while (1) {
         /* Spin forever. */
         ++count;
     }

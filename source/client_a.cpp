@@ -22,7 +22,6 @@
 
 struct box_context {
     uint32_t number;
-    RawSerial * pc;
 };
 
 static const UvisorBoxAclItem acl[] = {
@@ -30,11 +29,13 @@ static const UvisorBoxAclItem acl[] = {
 
 static void client_a_main(const void *);
 
-/* Box configuration */
+/* Box configuration
+ * This box has a smaller interrupt and main thread stack sizes as we do nothing
+ * special in them. */
 UVISOR_BOX_NAMESPACE("client_a");
-UVISOR_BOX_HEAPSIZE(8192);
-UVISOR_BOX_MAIN(client_a_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
-UVISOR_BOX_CONFIG(secure_number_client_a, acl, UVISOR_BOX_STACK_SIZE, box_context);
+UVISOR_BOX_HEAPSIZE(3072);
+UVISOR_BOX_MAIN(client_a_main, osPriorityNormal, 512);
+UVISOR_BOX_CONFIG(secure_number_client_a, acl, 512, box_context);
 
 static uint32_t get_a_number()
 {
@@ -42,7 +43,7 @@ static uint32_t get_a_number()
     return (uvisor_ctx->number -= 500UL);
 }
 
-static void box_async_runner(const void *)
+static void box_async_runner(void)
 {
     while (1) {
         uvisor_rpc_result_t result;
@@ -56,11 +57,8 @@ static void box_async_runner(const void *)
         while (1) {
             uint32_t ret;
             int status = rpc_fncall_wait(result, UVISOR_WAIT_FOREVER, &ret);
-            uvisor_ctx->pc->printf("%c: %s '0x%08x'\r\n",
-                                   (char) uvisor_box_id_self() + '0',
-                                   (ret == 0) ? "Wrote" :
-                                                "Permission denied. This client cannot write the secure number",
-                                   (unsigned int) number);
+            shared_pc.printf("client_a: Attempt to write  0x%08X (%s)\r\n",
+                             (unsigned int) number, (ret == 0) ? "granted" : "denied");
             /* FIXME: Add better error handling. */
             if (!status) {
                 break;
@@ -71,12 +69,12 @@ static void box_async_runner(const void *)
     }
 }
 
-static void box_sync_runner(const void *)
+static void box_sync_runner(void)
 {
     while (1) {
         /* Synchronous access to the number. */
         const uint32_t number = secure_number_get_number();
-        uvisor_ctx->pc->printf("%c: Read '0x%08x'\r\n", (char) uvisor_box_id_self() + '0', (unsigned int) number);
+        shared_pc.printf("client_a: Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
 
         Thread::wait(7000);
     }
@@ -84,14 +82,16 @@ static void box_sync_runner(const void *)
 
 static void client_a_main(const void *)
 {
-    /* Allocate serial port to ensure that code in this secure box won't touch
-     * the handle in the default security context when printing. */
-    uvisor_ctx->pc = new RawSerial(USBTX, USBRX);
-    if (!uvisor_ctx->pc) {
-        return;
-    }
+    /* Create new threads. */
+    /* Note: The stack must be at least 1kB since threads will use printf. */
+    Thread sync(osPriorityNormal, 1024, NULL);
+    sync.start(box_sync_runner);
+    Thread async(osPriorityNormal, 1024, NULL);
+    async.start(box_async_runner);
 
-    srand(uvisor_box_id_self());
-    new Thread(box_sync_runner, NULL);
-    new Thread(box_async_runner, NULL);
+    size_t count = 0;
+    while (1) {
+        /* Spin forever. */
+        ++count;
+    }
 }

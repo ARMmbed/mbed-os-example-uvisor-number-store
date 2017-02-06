@@ -24,7 +24,6 @@ struct box_context {
     int trusted_id;
     int previous_box_caller;
     int caller_id;
-    RawSerial * pc;
 };
 
 static const UvisorBoxAclItem acl[] = {
@@ -36,7 +35,7 @@ static int set_number(uint32_t number);
 
 /* Box configuration */
 UVISOR_BOX_NAMESPACE(NULL);
-UVISOR_BOX_HEAPSIZE(8192);
+UVISOR_BOX_HEAPSIZE(3072);
 UVISOR_BOX_MAIN(number_store_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
 UVISOR_BOX_CONFIG(box_number_store, acl, UVISOR_BOX_STACK_SIZE, box_context);
 
@@ -80,9 +79,9 @@ static int set_number(uint32_t number)
         uvisor_box_namespace(id, name, sizeof(name));
         /* We only trust client a. */
         static const char * trusted_namespace = "client_a";
-        if (memcmp(name, trusted_namespace, sizeof(*trusted_namespace)) == 0) {
+        size_t trusted_namespace_length = strlen(trusted_namespace);
+        if (memcmp(name, trusted_namespace, trusted_namespace_length + 1) == 0) {
             uvisor_ctx->trusted_id = id;
-            uvisor_ctx->pc->printf("Trusted client a has box id %u\r\n", id);
         } else {
             return 1;
         }
@@ -103,13 +102,6 @@ static int set_number(uint32_t number)
 
 static void number_store_main(const void *)
 {
-    /* Allocate serial port to ensure that code in this secure box won't touch
-     * the handle in the default security context when printing. */
-    uvisor_ctx->pc = new RawSerial(USBTX, USBRX);
-    if (!uvisor_ctx->pc) {
-        return;
-    }
-
     /* Today we only allow client a to write to the number. */
     uvisor_ctx->trusted_id = -1;
 
@@ -119,6 +111,8 @@ static void number_store_main(const void *)
         (TFN_Ptr) set_number
     };
 
+    shared_pc.printf("vault   : Only client_a can write into the vault\r\n");
+    shared_pc.printf("vault   : All clients can read the vault\r\n");
     while (1) {
         int status;
 
@@ -126,7 +120,7 @@ static void number_store_main(const void *)
         status = rpc_fncall_waitfor(my_fn_array, 2, &uvisor_ctx->caller_id, UVISOR_WAIT_FOREVER);
 
         if (status) {
-            uvisor_ctx->pc->printf("Failure is not an option.\r\n");
+            shared_pc.printf("Failure is not an option.\r\n");
             uvisor_error(USER_NOT_ALLOWED);
         }
     }
