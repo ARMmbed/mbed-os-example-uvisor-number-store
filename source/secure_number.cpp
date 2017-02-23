@@ -39,6 +39,12 @@ UVISOR_BOX_HEAPSIZE(3072);
 UVISOR_BOX_MAIN(number_store_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
 UVISOR_BOX_CONFIG(box_number_store, acl, UVISOR_BOX_STACK_SIZE, box_context);
 
+/* FIXME: The guard is needed for backwards-compatibility reasons. Remove it
+ *        when mbed OS is updated. */
+#ifdef __uvisor_ctx
+#define uvisor_ctx ((my_box_context *) __uvisor_ctx)
+#endif
+
 /* Gateways */
 UVISOR_BOX_RPC_GATEWAY_SYNC (box_number_store, secure_number_get_number, get_number, uint32_t, void);
 UVISOR_BOX_RPC_GATEWAY_ASYNC(box_number_store, secure_number_set_number, set_number, int, uint32_t);
