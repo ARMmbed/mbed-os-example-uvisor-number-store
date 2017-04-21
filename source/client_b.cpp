@@ -28,7 +28,7 @@ static const UvisorBoxAclItem acl[] = {
     /* This secure box is pure software, no secure peripherals are required. */
 };
 
-static void client_b_main(const void *);
+static void client_b_main(void *);
 
 /* Box configuration
  * This box has a smaller interrupt stack size as we do nothing special in it.
@@ -50,7 +50,7 @@ static uint32_t get_a_number()
     return (uvisor_ctx->number -= 300UL);
 }
 
-static void client_b_main(const void *)
+static void client_b_main(void *)
 {
     /* The entire box code runs in its main thread. */
     while (1) {
