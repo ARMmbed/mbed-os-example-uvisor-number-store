@@ -27,7 +27,7 @@ struct box_context {
 static const UvisorBoxAclItem acl[] = {
 };
 
-static void client_a_main(const void *);
+static void client_a_main(void *);
 
 /* Box configuration
  * This box has a smaller interrupt and main thread stack sizes as we do nothing
@@ -86,7 +86,7 @@ static void box_sync_runner(void)
     }
 }
 
-static void client_a_main(const void *)
+static void client_a_main(void *)
 {
     /* Create new threads. */
     /* Note: The stack must be at least 1kB since threads will use printf. */
