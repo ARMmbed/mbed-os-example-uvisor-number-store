@@ -29,7 +29,7 @@ struct box_context {
 static const UvisorBoxAclItem acl[] = {
 };
 
-static void number_store_main(const void *);
+static void number_store_main(void *);
 static uint32_t get_number(void);
 static int set_number(uint32_t number);
 
@@ -106,7 +106,7 @@ static int set_number(uint32_t number)
     return 0;
 }
 
-static void number_store_main(const void *)
+static void number_store_main(void *)
 {
     /* Today we only allow client a to write to the number. */
     uvisor_ctx->trusted_id = -1;
