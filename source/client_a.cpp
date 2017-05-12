@@ -34,7 +34,7 @@ static void client_a_main(const void *);
  * special in them. */
 UVISOR_BOX_NAMESPACE("client_a");
 UVISOR_BOX_HEAPSIZE(3072);
-UVISOR_BOX_MAIN(client_a_main, osPriorityNormal, 512);
+UVISOR_BOX_MAIN(client_a_main, osPriorityNormal, 768);
 UVISOR_BOX_CONFIG(secure_number_client_a, acl, 512, box_context);
 
 /* FIXME: The guard is needed for backwards-compatibility reasons. Remove it
