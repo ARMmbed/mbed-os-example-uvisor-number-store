@@ -38,11 +38,7 @@ UVISOR_BOX_HEAPSIZE(3072);
 UVISOR_BOX_MAIN(client_b_main, osPriorityNormal, 1024);
 UVISOR_BOX_CONFIG(secure_number_client_b, acl, 512, box_context);
 
-/* FIXME: The guard is needed for backwards-compatibility reasons. Remove it
- *        when mbed OS is updated. */
-#ifdef __uvisor_ctx
 #define uvisor_ctx ((box_context *) __uvisor_ctx)
-#endif
 
 static uint32_t get_a_number()
 {
