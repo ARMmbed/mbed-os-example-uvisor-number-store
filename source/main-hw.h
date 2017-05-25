@@ -25,8 +25,12 @@ extern Serial shared_pc;
 
 #if defined(TARGET_K64F)
 
-#define LED_ON  false
-#define LED_OFF true
+#define MAIN_LED           LED1
+#define SECURE_LED         LED2
+#define LED_ON             false
+#define LED_OFF            true
+#define SECURE_SWITCH      SW2
+#define SECURE_SWITCH_PULL PullUp
 
 #define MAIN_ACL(acl_list_name) \
     static const UvisorBoxAclItem acl_list_name[] = {     \
