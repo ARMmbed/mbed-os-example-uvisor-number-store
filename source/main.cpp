@@ -26,7 +26,7 @@
 MAIN_ACL(g_main_acl);
 /* Enable uVisor. */
 UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
-UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
+UVISOR_SET_PAGE_HEAP(1 * 1024, 1);
 
 DigitalOut led_red(LED1);
 DigitalOut led_green(LED2);

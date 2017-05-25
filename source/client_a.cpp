@@ -33,7 +33,7 @@ static void client_a_main(const void *);
  * This box has a smaller interrupt and main thread stack sizes as we do nothing
  * special in them. */
 UVISOR_BOX_NAMESPACE("client_a");
-UVISOR_BOX_HEAPSIZE(3072);
+UVISOR_BOX_HEAPSIZE(4096);
 UVISOR_BOX_MAIN(client_a_main, osPriorityNormal, 768);
 UVISOR_BOX_CONFIG(secure_number_client_a, acl, 512, box_context);
 
