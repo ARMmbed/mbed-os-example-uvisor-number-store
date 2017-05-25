@@ -23,6 +23,7 @@ Supported devices:
 | Target            | Toolchain | Baud rate |
 |-------------------|-----------|-----------|
 | `K64F`            | `GCC_ARM` | 9600      |
+| `DISCO_F429ZI`    | `GCC_ARM` | 9600      |
 | `EFM32GG_STK3700` | `GCC_ARM` | 9600      |
 
 Latest release: [mbed-os-5.4.x](https://github.com/ARMmbed/mbed-os-example-uvisor/releases/tag/latest). Tested with [mbed-cli v1.0.0](https://github.com/ARMmbed/mbed-cli/releases/tag/1.0.0).
