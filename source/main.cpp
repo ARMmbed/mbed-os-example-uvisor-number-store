@@ -68,7 +68,7 @@ static void main_async_runner(void)
             }
         }
 
-        Thread::wait(13000);
+        Thread::wait(7000);
     }
 }
 
@@ -79,7 +79,7 @@ static void main_sync_runner(void)
         const uint32_t number = secure_number_get_number();
         shared_pc.printf("public  : Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
 
-        Thread::wait(11000);
+        Thread::wait(7000);
     }
 }
 

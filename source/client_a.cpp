@@ -67,7 +67,7 @@ static void box_async_runner(void)
             }
         }
 
-        Thread::wait(5000);
+        Thread::wait(7000);
     }
 }
 
@@ -84,6 +84,8 @@ static void box_sync_runner(void)
 
 static void client_a_main(const void *)
 {
+    Thread::wait(1000);
+
     /* Create new threads. */
     /* Note: The stack must be at least 1kB since threads will use printf. */
     Thread sync(osPriorityNormal, 1024, NULL);
