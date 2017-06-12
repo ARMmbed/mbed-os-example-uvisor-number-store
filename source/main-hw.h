@@ -31,6 +31,7 @@ extern Serial shared_pc;
 #define LED_OFF            true
 #define SECURE_SWITCH      SW2
 #define SECURE_SWITCH_PULL PullUp
+#define SHARED_SERIAL_BAUD 9600
 
 #define MAIN_ACL(acl_list_name) \
     static const UvisorBoxAclItem acl_list_name[] = {     \
@@ -52,7 +53,6 @@ extern Serial shared_pc;
     }
 
 #else /* Target-specific settings */
-
 #error "Unsupported target. Checkout the README.md file for the list of supported targets for this app."
 
 #endif /* Target-specific settings */

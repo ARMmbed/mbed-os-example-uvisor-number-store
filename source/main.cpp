@@ -38,7 +38,7 @@ DigitalOut led_red(LED1);
 DigitalOut led_green(LED2);
 DigitalOut led_blue(LED3);
 
-Serial shared_pc(USBTX, USBRX);
+Serial shared_pc(USBTX, USBRX, SHARED_SERIAL_BAUD);
 
 static uint32_t get_a_number()
 {
