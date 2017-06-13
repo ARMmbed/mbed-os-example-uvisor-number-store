@@ -2,12 +2,11 @@
 ***** uVisor secure number store example *****
 vault   : Only client_a can write into the vault
 vault   : All clients can read the vault
-client_b: Attempt to write  0xFFFFFED4 (denied)
+public  : Attempt to read : 0x00000000 (granted)
+public  : Attempt to write  0x00000019 (denied)
 client_a: Attempt to read : 0x00000000 (granted)
 client_a: Attempt to write  0xFFFFFE0C (granted)
+client_b: Attempt to write  0xFFFFFED4 (denied)
 public  : Attempt to read : 0xFFFFFE0C (granted)
-public  : Attempt to write  0x00000019 (denied)
 client_b: Attempt to read : 0xFFFFFE0C (granted)
-client_a: Attempt to read : 0xFFFFFE0C (granted)
-client_a: Attempt to write  0xFFFFFC18 (granted)
-public  : Attempt to read : 0xFFFFFC18 (granted)
+public  : Attempt to write  0xFFFFFE89 (denied)

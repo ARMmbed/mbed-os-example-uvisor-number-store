@@ -26,13 +26,19 @@
 MAIN_ACL(g_main_acl);
 /* Enable uVisor. */
 UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
-UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
+UVISOR_SET_PAGE_HEAP(1 * 1024, 1);
+
+/* Targets with an ARMv7-M MPU needs this space adjustment to prevent a runtime
+ * memory overflow error. The code below has been output directly by uVisor. */
+#if defined(TARGET_EFM32GG_STK3700) || defined(TARGET_DISCO_F429ZI)
+uint8_t __attribute__((section(".keep.uvisor.bss.boxes"), aligned(32))) __boxes_overhead[8064];
+#endif
 
 DigitalOut led_red(LED1);
 DigitalOut led_green(LED2);
 DigitalOut led_blue(LED3);
 
-Serial shared_pc(USBTX, USBRX);
+Serial shared_pc(USBTX, USBRX, SHARED_SERIAL_BAUD);
 
 static uint32_t get_a_number()
 {
@@ -62,7 +68,7 @@ static void main_async_runner(void)
             }
         }
 
-        Thread::wait(13000);
+        Thread::wait(7000);
     }
 }
 
@@ -73,7 +79,7 @@ static void main_sync_runner(void)
         const uint32_t number = secure_number_get_number();
         shared_pc.printf("public  : Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
 
-        Thread::wait(11000);
+        Thread::wait(7000);
     }
 }
 

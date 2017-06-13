@@ -33,15 +33,11 @@ static void client_a_main(const void *);
  * This box has a smaller interrupt and main thread stack sizes as we do nothing
  * special in them. */
 UVISOR_BOX_NAMESPACE("client_a");
-UVISOR_BOX_HEAPSIZE(3072);
+UVISOR_BOX_HEAPSIZE(4096);
 UVISOR_BOX_MAIN(client_a_main, osPriorityNormal, 768);
 UVISOR_BOX_CONFIG(secure_number_client_a, acl, 512, box_context);
 
-/* FIXME: The guard is needed for backwards-compatibility reasons. Remove it
- *        when mbed OS is updated. */
-#ifdef __uvisor_ctx
 #define uvisor_ctx ((box_context *) __uvisor_ctx)
-#endif
 
 static uint32_t get_a_number()
 {
@@ -71,7 +67,7 @@ static void box_async_runner(void)
             }
         }
 
-        Thread::wait(5000);
+        Thread::wait(7000);
     }
 }
 
@@ -88,6 +84,8 @@ static void box_sync_runner(void)
 
 static void client_a_main(const void *)
 {
+    Thread::wait(1000);
+
     /* Create new threads. */
     /* Note: The stack must be at least 1kB since threads will use printf. */
     Thread sync(osPriorityNormal, 1024, NULL);

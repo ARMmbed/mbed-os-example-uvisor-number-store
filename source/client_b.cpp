@@ -38,11 +38,7 @@ UVISOR_BOX_HEAPSIZE(3072);
 UVISOR_BOX_MAIN(client_b_main, osPriorityNormal, 1024);
 UVISOR_BOX_CONFIG(secure_number_client_b, acl, 512, box_context);
 
-/* FIXME: The guard is needed for backwards-compatibility reasons. Remove it
- *        when mbed OS is updated. */
-#ifdef __uvisor_ctx
 #define uvisor_ctx ((box_context *) __uvisor_ctx)
-#endif
 
 static uint32_t get_a_number()
 {
@@ -52,6 +48,8 @@ static uint32_t get_a_number()
 
 static void client_b_main(const void *)
 {
+    Thread::wait(2000);
+
     /* The entire box code runs in its main thread. */
     while (1) {
         uvisor_rpc_result_t result;
@@ -76,6 +74,6 @@ static void client_b_main(const void *)
         number = secure_number_get_number();
         shared_pc.printf("client_b: Attempt to read : 0x%08X (granted)\r\n", (unsigned int) number);
 
-        Thread::wait(3000);
+        Thread::wait(7000);
     }
 }

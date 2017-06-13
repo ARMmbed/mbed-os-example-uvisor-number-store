@@ -14,15 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SECURE_NUMBER_H
-#define SECURE_NUMBER_H
+#ifndef __SECURE_NUMBER_H__
+#define __SECURE_NUMBER_H__
 
 #include "uvisor-lib/uvisor-lib.h"
 #include <stdint.h>
-
 
 UVISOR_EXTERN uint32_t (*secure_number_get_number)(void);
 
 UVISOR_EXTERN uvisor_rpc_result_t (*secure_number_set_number)(uint32_t number);
 
-#endif  /* SECURE_NUMBER_H */
+#endif  /* __SECURE_NUMBER_H__ */
