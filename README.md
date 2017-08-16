@@ -1,5 +1,7 @@
 # Threaded RPC with uVisor example
 
+[![Build Status](https://travis-ci.org/ARMmbed/mbed-os-example-uvisor-number-store.svg?branch=master)](https://travis-ci.org/ARMmbed/mbed-os-example-uvisor-number-store)
+
 This is a simple example to show how to use several uVisor APIs to build a box that securely stores a number.
 This number can only be written by one box, but read by all boxes.
 
