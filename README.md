@@ -34,6 +34,7 @@ Latest release: [mbed-os-5.4.x](https://github.com/ARMmbed/mbed-os-example-uviso
 
 For a release build, please enter:
 
+
 ```bash
 $ mbed compile -m K64F -t GCC_ARM -c
 ```
