@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/ARMmbed/mbed-os-example-uvisor-number-store.svg?branch=master)](https://travis-ci.org/ARMmbed/mbed-os-example-uvisor-number-store)
 
+<span class="warnings">**Warning**: uVisor is superseded by the Secure Partition Manager (SPM) defined in the ARM Platform Security Architecture (PSA). uVisor is deprecated as of Mbed OS 5.10, and being replaced by a native PSA-compliant implementation of SPM.</span>
+
 This is a simple example to show how to use several uVisor APIs to build a box that securely stores a number.
 This number can only be written by one box, but read by all boxes.
 
